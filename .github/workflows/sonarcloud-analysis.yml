@@ -1,5 +1,6 @@
-name: Full Stack CI
+name: SonarCloud analyze
 
+# Triggers for the workflow
 on:
   push:
     branches:
@@ -16,7 +17,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      # Setup for all necessary tools
+      # Step 1: Setup for all necessary tools
       - name: Set up JDK
         uses: actions/setup-java@v3
         with:
@@ -28,19 +29,19 @@ jobs:
         with:
           node-version: '14'
 
-      # Build commands for backend and frontend
+      # Step 2: Build commands for backend and frontend
       - run: mvn clean verify
         working-directory: ./back
 
       - run: npm install && npm run build
         working-directory: ./front
 
-      # Run backend tests
+      # Step 3: Run backend tests
       - name: Run Backend Tests
         run: mvn test
         working-directory: ./back
 
-      # Run frontend tests
+      # Step 4: Run frontend tests
       - name: Run Frontend Tests
         run: npm test
         working-directory: ./front
@@ -61,7 +62,7 @@ jobs:
         run: cat front/coverage/lcov.info
         working-directory: ./
 
-      # SonarCloud analysis
+      # Step 5: SonarCloud analysis
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2.1.1
         env:

@@ -1,5 +1,6 @@
 name: Build and Push Docker images
 
+# Triggers for the workflow
 on:
   push:
     branches:
@@ -9,18 +10,23 @@ on:
       - main
 
 jobs:
+  # Job to build and push backend Docker image
   build-and-push-backend:
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Checkout the code
       - name: Check out the repo
         uses: actions/checkout@v3
 
+      # Step 2: Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # Step 3: Build and push the Docker image for the backend
       - name: Build and push Backend Docker image
         uses: docker/build-push-action@v2
         with:
@@ -29,26 +35,32 @@ jobs:
           push: true
           tags: citizensyd/deliveryfit-backend:latest
 
+  # Job to build and push frontend Docker image
   build-and-push-frontend:
     needs: build-and-push-backend
     runs-on: ubuntu-latest
+
     steps:
+      # Step 1: Checkout the code
       - name: Check out the repo
         uses: actions/checkout@v3
 
+      # Step 2: Log in to Docker Hub
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
 
+      # Step 3: Build and push the Docker image for the frontend
       - name: Build and push Frontend Docker image
         uses: docker/build-push-action@v2
         with:
-          context: ./front
+          context: ./front  # Context directory for Docker build
           file: ./front/Dockerfile
           push: true
           tags: citizensyd/deliveryfit-frontend:latest
 
+      # Step 4: Logout from Docker Hub
       - name: Logout from Docker Hub
         run: docker logout
