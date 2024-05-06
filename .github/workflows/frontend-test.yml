@@ -1,5 +1,6 @@
 name: Frontend Test
 
+# Triggers for the workflow
 on:
   push:
     branches:
@@ -7,25 +8,32 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
+      # Step 1: Checkout the code
       - uses: actions/checkout@v2
+
+      # Step 2: Set up Node.js environment
       - name: Use Node.js 18.x
         uses: actions/setup-node@v2
         with:
           node-version: '18.x'
-      - name: install dependencies
+
+      # Step 3: Install dependencies
+      - name: Install dependencies
         working-directory: ./front
         run: npm ci
+
+      # Step 4: Run tests
       - name: Run tests
         working-directory: ./front
         run: npm run test
-      - name: List TypeScript Coverage Report
-        run: ls -l coverage/
-        working-directory: ./front
+
+      # Step 5: Upload coverage to Codecov
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
@@ -34,6 +42,7 @@ jobs:
           flags: frontend
           name: codecov-frontend-report
 
+      # Step 6: Test Reporting
       - name: Test Reporting
         uses: phoenix-actions/test-reporting@v14
         if: always()
