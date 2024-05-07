@@ -44,6 +44,7 @@ jobs:
        # Step 4: SonarCloud analysis
       - name: Build and analyze on SonarCloud
         run: mvn clean verify sonar:sonar
+        working-directory: ./back
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
