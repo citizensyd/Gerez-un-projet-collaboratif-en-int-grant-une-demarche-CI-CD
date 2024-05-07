@@ -42,10 +42,11 @@ jobs:
         working-directory: ./
 
        # Step 4: SonarCloud analysis
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
+      - name: Build and analyze on SonarCloud
+        run: mvn clean verify sonar:sonar
         with:
           projectBaseDir: back
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_HOST_URL: "https://sonarcloud.io"
