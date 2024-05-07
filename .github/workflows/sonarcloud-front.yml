@@ -18,51 +18,29 @@ jobs:
           fetch-depth: 0
 
       # Step 1: Setup for all necessary tools
-      - name: Set up JDK
-        uses: actions/setup-java@v3
-        with:
-          java-version: '11'
-          distribution: 'adopt'
-
       - name: Set up Node.js
         uses: actions/setup-node@v2
         with:
           node-version: '14'
 
       # Step 2: Build commands for backend and frontend
-      - run: mvn clean verify
-        working-directory: ./back
-
       - run: npm install && npm run build
         working-directory: ./front
 
-      # Step 3: Run backend tests
-      - name: Run Backend Tests
-        run: mvn test
-        working-directory: ./back
-
-      # Step 4: Run frontend tests
+      # Step 3: Run frontend tests
       - name: Run Frontend Tests
         run: npm test
         working-directory: ./front
-
-      - name: List Jacoco Coverage Report
-        run: ls -l target/site/jacoco/
-        working-directory: ./back
 
       - name: List TypeScript Coverage Report
         run: ls -l coverage/
         working-directory: ./front
 
-      - name: Display Jacoco Report Content
-        run: cat back/target/site/jacoco/jacoco.xml
-        working-directory: ./
-
       - name: Display TypeScript Coverage Report Content
         run: cat front/coverage/lcov.info
         working-directory: ./
 
-      # Step 5: SonarCloud analysis
+      # Step 4: SonarCloud analysis
       - name: SonarCloud Scan
         uses: SonarSource/sonarcloud-github-action@v2.1.1
         env:
