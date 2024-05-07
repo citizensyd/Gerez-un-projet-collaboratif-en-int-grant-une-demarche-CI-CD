@@ -1,0 +1,11 @@
+codecov:
+  require_ci_to_pass: true
+
+coverage:
+  status:
+    project:
+      default:
+        target: 70%
+        threshold: 0%
+        if_not_found: failure
+        only_pulls: false
