@@ -37,7 +37,19 @@ module.exports = function (config) {
     coverageIstanbulReporter: {
       dir: require('path').join(__dirname, './coverage'),
       reports: ['html', 'lcovonly', 'text-summary'],
-      fixWebpackSourcePaths: true
+      fixWebpackSourcePaths: true,
+      thresholds: {
+        emitWarning: false,
+        global: {
+          statements: 70,
+          lines: 70,
+          branches: 70,
+          functions: 70
+        }
+      }
+    },
+    preprocessors: {
+      'src/**/*.ts': ['coverage']
     },
     reporters: ['progress', 'junit', 'coverage-istanbul'],
     junitReporter: {
