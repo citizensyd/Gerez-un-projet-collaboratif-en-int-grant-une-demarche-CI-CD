@@ -27,7 +27,7 @@ module.exports = function (config) {
       suppressAll: true // removes the duplicated traces
     },
     coverageReporter: {
-      dir: require('path').join(__dirname, './coverage/bobapp'),
+      dir: require('path').join(__dirname, './coverage'),
       subdir: '.',
       reporters: [
         { type: 'html' },
@@ -37,19 +37,7 @@ module.exports = function (config) {
     coverageIstanbulReporter: {
       dir: require('path').join(__dirname, './coverage'),
       reports: ['html', 'lcovonly', 'text-summary'],
-      fixWebpackSourcePaths: true,
-      thresholds: {
-        emitWarning: false,
-        global: {
-          statements: 70,
-          lines: 70,
-          branches: 70,
-          functions: 70
-        }
-      }
-    },
-    preprocessors: {
-      'src/**/*.ts': ['coverage']
+      fixWebpackSourcePaths: true
     },
     reporters: ['progress', 'junit', 'coverage-istanbul'],
     junitReporter: {

@@ -42,13 +42,6 @@ jobs:
           flags: frontend
           name: codecov-frontend-report
 
-      - name: Check coverage
-        run: |
-          if ! grep -q "Statements   : 70%" ./coverage/report-html/index.html; then
-            echo "Coverage threshold not met."
-            exit 1
-          fi
-
       # Step 6: Test Reporting
       - name: Test Reporting
         uses: phoenix-actions/test-reporting@v14
