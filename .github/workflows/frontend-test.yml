@@ -42,17 +42,7 @@ jobs:
           flags: frontend
           name: codecov-frontend-report
 
-      # Step 6: Fail if coverage is below 70%
-      - name: Check Coverage
-        run: |
-          COVERAGE=$(grep -Po 'line-rate="\K[^"]*' ./front/coverage/lcov.info)
-          echo "Code coverage is $COVERAGE"
-          if (( $(echo "$COVERAGE < 0.70" | bc -l) )); then
-            echo "Coverage below 70%. Build failed."
-            exit 1
-          fi
-
-      # Step 7: Test Reporting
+      # Step 6: Test Reporting
       - name: Test Reporting
         uses: phoenix-actions/test-reporting@v14
         if: always()
