@@ -31,7 +31,6 @@ jobs:
           coverage_report_name: Back Spring Boot Tests
           coverage_report_title: JaCoCo
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          minimum_coverage: 80
           fail_below_threshold: false
 
       - name: Build and Push Backend Docker Image
@@ -40,7 +39,7 @@ jobs:
           context: ./back
           file: ./back/Dockerfile
           push: true
-          tags: your-username/your-repo-backend:latest
+          tags: citizensyd/deliveryfit:latest
 
   frontend:
     runs-on: ubuntu-latest
@@ -71,7 +70,7 @@ jobs:
           context: ./front
           file: ./front/Dockerfile
           push: true
-          tags: your-username/your-repo-frontend:latest
+          tags: citizensyd/deliveryfit-frontend:latest
 
       - name: Logout from Docker Hub
         run: docker logout
