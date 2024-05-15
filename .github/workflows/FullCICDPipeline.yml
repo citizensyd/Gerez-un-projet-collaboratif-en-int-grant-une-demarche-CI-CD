@@ -88,9 +88,10 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Cache npm dependencies
+        id: cache-deps
         uses: actions/cache@v2
         with:
-          path: ~/.npm
+          path: ./front/node_modules
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
@@ -99,6 +100,7 @@ jobs:
         with:
           node-version: '18'
       - name: Install Dependencies
+        if: steps.cache-deps.outputs.cache-hit != 'true'
         working-directory: ./front
         run: npm ci
 
