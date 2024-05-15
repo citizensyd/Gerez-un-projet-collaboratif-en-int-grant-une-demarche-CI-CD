@@ -45,7 +45,7 @@ jobs:
 
   frontEndTestCoverage:
     runs-on: ubuntu-latest
-    needs: backend
+    needs: backEndTestCoverage
     steps:
       - uses: actions/checkout@v3
 
@@ -81,7 +81,7 @@ jobs:
 
   sonarcloud-analysis:
     runs-on: ubuntu-latest
-    needs: [backend, frontend]
+    needs: [backEndTestCoverage, frontEndTestCoverage]
     steps:
       - uses: actions/checkout@v3
         with:
