@@ -85,7 +85,7 @@ jobs:
 
   frontend-test-sonarcloud-dockerhub:
     runs-on: ubuntu-latest
-    needs: backend-test-sonarcloud-dockerhub
+    needs: backend-test
     steps:
       - uses: actions/checkout@v3
 
