@@ -83,12 +83,10 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_HOST_URL: "https://sonarcloud.io"
 
-  frontend-test-sonarcloud-dockerhub:
+  frontend-build:
     runs-on: ubuntu-latest
-    needs: backend-test
     steps:
       - uses: actions/checkout@v3
-
       - name: Cache npm dependencies
         uses: actions/cache@v2
         with:
@@ -96,32 +94,57 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
-
       - name: Use Node.js 18.x
         uses: actions/setup-node@v2
         with:
           node-version: '18'
-
-      - name: Install Dependencies and Run Tests
+      - name: Install Dependencies
         working-directory: ./front
-        run: npm ci && npm run test
+        run: npm ci
 
+  frontend-test:
+    runs-on: ubuntu-latest
+    needs: frontend-build
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache npm dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
+      - name: Run Tests and Generate Coverage Report
+        working-directory: ./front
+        run: npm run test
       - name: Upload Coverage to Codecov
         uses: codecov/codecov-action@v1
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./front/coverage/lcov.info
           flags: frontend
-          name: codecov-frontend-report
+          name: codecov-frontend-repor
 
-      - name: Test Reporting
-        uses: phoenix-actions/test-reporting@v14
-        if: always()
+  frontend-analyze:
+    runs-on: ubuntu-latest
+    needs: frontend-test
+    steps:
+      - uses: actions/checkout@v3
+      - name: Cache npm dependencies
+        uses: actions/cache@v2
         with:
-          name: Front End Angular Tests Report
-          path: 'front/test-results/*.xml'
-          reporter: 'java-junit'
-
+          path: ~/.npm
+          key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-npm-
+      - name: Use Node.js 18.x
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18'
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
         with:
@@ -130,12 +153,16 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
+  frontend-docker:
+    runs-on: ubuntu-latest
+    needs: frontend-analyze
+    steps:
+      - uses: actions/checkout@v3
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USERNAME }}
           password: ${{ secrets.DOCKER_PASSWORD }}
-
       - name: Build and Push Frontend Docker Image
         uses: docker/build-push-action@v2
         with:
@@ -143,7 +170,5 @@ jobs:
           file: ./front/Dockerfile
           push: true
           tags: citizensyd/deliveryfit-frontend:latest
-
       - name: Logout from Docker Hub
         run: docker logout
-
