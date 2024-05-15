@@ -101,8 +101,18 @@ jobs:
           java-version: '11'
           distribution: 'adopt'
 
+      - name: Build and analyze on SonarCloud
+        run: mvn clean verify sonar:sonar
+        working-directory: ./back
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_HOST_URL: "https://sonarcloud.io"
+
       - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v2.1.1
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: front
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
