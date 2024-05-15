@@ -114,6 +114,8 @@ jobs:
           key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-npm-
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
       - name: Use Node.js 18.x
         uses: actions/setup-node@v2
         with:
@@ -127,7 +129,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
           file: ./front/coverage/lcov.info
           flags: frontend
-          name: codecov-frontend-repor
+          name: codecov-frontend-report
 
   frontend-analyze:
     runs-on: ubuntu-latest
