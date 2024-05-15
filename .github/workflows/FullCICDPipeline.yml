@@ -9,7 +9,7 @@ on:
       - main
 
 jobs:
-  backEndTestCoverage:
+  backEndTestCoverageAndAnalyzeSonarCloud:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -32,6 +32,14 @@ jobs:
           coverage_report_title: JaCoCo
           github_token: ${{ secrets.GITHUB_TOKEN }}
           fail_below_threshold: false
+
+      - name: Build and analyze on SonarCloud
+        run: mvn clean verify sonar:sonar
+        working-directory: ./back
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          SONAR_HOST_URL: "https://sonarcloud.io"
 
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
@@ -70,6 +78,14 @@ jobs:
           flags: frontend
           name: codecov-frontend-report
 
+      - name: SonarCloud Scan
+        uses: sonarsource/sonarcloud-github-action@master
+        with:
+          projectBaseDir: front
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v1
         with:
@@ -87,32 +103,3 @@ jobs:
       - name: Logout from Docker Hub
         run: docker logout
 
-  sonarcloud-analysis:
-    runs-on: ubuntu-latest
-    needs: [backEndTestCoverage, frontEndTestCoverage]
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
-
-      - name: Set up JDK for SonarCloud Analysis
-        uses: actions/setup-java@v3
-        with:
-          java-version: '17'
-          distribution: 'adopt'
-
-      - name: Build and analyze on SonarCloud
-        run: mvn clean verify sonar:sonar
-        working-directory: ./back
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_HOST_URL: "https://sonarcloud.io"
-
-      - name: SonarCloud Scan
-        uses: sonarsource/sonarcloud-github-action@master
-        with:
-          projectBaseDir: front
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
